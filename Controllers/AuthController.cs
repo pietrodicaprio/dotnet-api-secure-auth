@@ -28,7 +28,8 @@ public class AuthController : ControllerBase
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh()
     {
-        var command = new RefreshTokenCommand(Request.Cookies["refresh_token"]);
+        var refreshToken = Request.Cookies["refresh_token"] ?? string.Empty;
+        var command = new RefreshTokenCommand(refreshToken);
         var result = await _mediator.Send(command);
 
         if (!result.IsSuccess)

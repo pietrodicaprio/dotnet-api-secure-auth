@@ -14,9 +14,17 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
 
     public async Task<LoginResult> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        string uid = await ValidateFirebaseTokenAsync(request.FirebaseToken);
+        string? uid = await ValidateFirebaseTokenAsync(request.FirebaseToken);
         if (uid == null)
-            return new LoginResult { IsSuccess = false, Error = "Invalid Firebase token" };
+            return new LoginResult
+            {
+                IsSuccess = false,
+                Error = "Invalid Firebase token",
+                AccessToken = string.Empty,
+                RefreshToken = string.Empty,
+                AccessCookieOptions = new CookieOptions(),
+                RefreshCookieOptions = new CookieOptions()
+            };
 
         var userData = new UserSession { Uid = uid };
         var ttl = TimeSpan.FromMinutes(30);
@@ -28,6 +36,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
         return new LoginResult
         {
             IsSuccess = true,
+            Error = string.Empty,
             AccessToken = accessToken,
             RefreshToken = refreshToken,
             AccessCookieOptions = CookieOptionsFactory.CreateAccessTokenOptions(),
@@ -37,6 +46,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
 
     private Task<string?> ValidateFirebaseTokenAsync(string firebaseToken)
     {
-        return Task.FromResult("uid-example" as string?);
+        return Task.FromResult<string?>("uid-example");
     }
 }

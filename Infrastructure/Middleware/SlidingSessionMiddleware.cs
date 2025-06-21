@@ -21,9 +21,11 @@ public class SlidingSessionMiddleware
             if (!string.IsNullOrEmpty(uid))
             {
                 var sessionKey = $"session:{uid}";
-                if (_cache.TryGet<UserSession>(sessionKey, out var session))
+                var sessionResult = _cache.TryGet<UserSession>(sessionKey);
+                if (sessionResult.HasValue)
                 {
-                    _cache.Set(sessionKey, session, TimeSpan.FromMinutes(30));
+                    var session = sessionResult.Value;
+                    await _cache.SetAsync(sessionKey, session, TimeSpan.FromMinutes(30));
                     context.Items["UserSession"] = session;
                 }
             }

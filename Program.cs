@@ -1,9 +1,7 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using ZiggyCreatures.Caching.Fusion;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +17,10 @@ builder.Services.AddFusionCache()
     });
 
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
-builder.Services.AddMediatR(typeof(Program));
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<Program>();
+});
 builder.Services.AddScoped<SlidingSessionMiddleware>();
 
 FirebaseApp.Create(new AppOptions
